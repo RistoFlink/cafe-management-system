@@ -30,6 +30,8 @@ public class CustomerUsersDetailsService implements UserDetailsService {
     }
 
     public dev.ristoflink.cafemanagementsystem.pojo.User getUserDetail() {
-        return userDetail;
+        dev.ristoflink.cafemanagementsystem.pojo.User user = userDetail;
+        user.setPassword(null);
+        return user;
     }
 }

@@ -6,6 +6,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,13 +19,20 @@ import java.io.IOException;
 
 @Component
 @AllArgsConstructor
+@NoArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
 
-    JwtUtil jwtUtil;
+    @Autowired
+    private JwtUtil jwtUtil;
 
     CustomerUsersDetailsService service;
 
-    Claims claims = null;
+    private Claims claims;
+
+    public JwtFilter(Claims claims) {
+        this.claims = claims;
+    }
+
     private String username = null;
 
     @Override
@@ -52,5 +61,19 @@ public class JwtFilter extends OncePerRequestFilter {
             }
             filterChain.doFilter(request, response);
         }
+
+        }
+    public boolean isAdmin() {
+        return "admin".equalsIgnoreCase((String) claims.get("role"));
     }
+
+    public boolean isUser() {
+        return "user".equalsIgnoreCase((String) claims.get("role"));
+    }
+    //TODO replace the above methods with something more generic?
+
+    public String getCurrentUser() {
+        return username;
+    }
+
 }

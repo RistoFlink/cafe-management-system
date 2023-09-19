@@ -4,7 +4,10 @@ import io.github.cdimascio.dotenv.Dotenv;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -12,12 +15,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-@Service
+@Component
+@AllArgsConstructor
 public class JwtUtil {
     //using this to try and hide the secret key
-    Dotenv dotenv = Dotenv.load();
-    private final String secretKey = dotenv.get("SECRET");
-    private final String secret = secretKey;
+    //Dotenv dotenv = Dotenv.load();
+    //private final String secretKey = dotenv.get("SECRET");
+    private final String secret = "salaisuus";
 
     public String extractUsername(String token) {
         return extractClaims(token, Claims::getSubject);

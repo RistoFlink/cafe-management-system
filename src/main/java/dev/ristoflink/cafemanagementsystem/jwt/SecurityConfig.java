@@ -14,6 +14,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 
 import static org.springframework.security.config.Customizer.withDefaults;
@@ -24,6 +25,8 @@ import static org.springframework.security.config.Customizer.withDefaults;
 public class SecurityConfig {
     CustomerUsersDetailsService customerUsersDetailsService;
 
+    JwtFilter jwtFilter;
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -33,8 +36,8 @@ public class SecurityConfig {
                         .requestMatchers("/user/**").permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .httpBasic(withDefaults());
-
+                .httpBasic(Customizer.withDefaults());
+        http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 

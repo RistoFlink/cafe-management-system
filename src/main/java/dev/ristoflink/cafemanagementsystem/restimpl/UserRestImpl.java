@@ -6,6 +6,7 @@ import dev.ristoflink.cafemanagementsystem.service.UserService;
 import dev.ristoflink.cafemanagementsystem.utils.CafeUtils;
 import dev.ristoflink.cafemanagementsystem.wrapper.UserWrapper;
 import lombok.AllArgsConstructor;
+import org.apache.coyote.http2.HpackDecoder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -48,5 +49,15 @@ public class UserRestImpl implements UserRest {
             e.printStackTrace();
         }
         return new ResponseEntity<List<UserWrapper>>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<String> update(Map<String, String> requestMap) {
+        try {
+            return userService.update(requestMap);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return CafeUtils.getResponseEntity(CafeConstants.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

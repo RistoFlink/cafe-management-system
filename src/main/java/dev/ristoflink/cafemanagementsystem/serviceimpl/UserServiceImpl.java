@@ -20,10 +20,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -101,6 +98,26 @@ public class UserServiceImpl implements UserService {
             e.printStackTrace();
         }
         return new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<String> update(Map<String, String> requestMap) {
+        try {
+             if(jwtFilter.isAdmin()) {
+                 Optional<User> optional = userDao.findById(Integer.parseInt(requestMap.get("id")));
+                 if (!optional.isEmpty()) {
+                     userDao.updateStatus(requestMap.get("status"), Integer.parseInt(requestMap.get("id")));
+                     return CafeUtils.getResponseEntity("User status updated successfully", HttpStatus.OK);
+                 } else {
+                     CafeUtils.getResponseEntity("User ID does not exist", HttpStatus.BAD_REQUEST);
+                 }
+             } else {
+                 CafeUtils.getResponseEntity(CafeConstants.UNAUTHORIZED_ACCESS, HttpStatus.UNAUTHORIZED);
+             }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return CafeUtils.getResponseEntity(CafeConstants.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     private boolean validateSignUpMap(Map<String, String> requestMap){

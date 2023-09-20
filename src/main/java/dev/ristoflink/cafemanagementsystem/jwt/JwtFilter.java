@@ -25,8 +25,10 @@ public class JwtFilter extends OncePerRequestFilter {
     @Autowired
     private JwtUtil jwtUtil;
 
+    @Autowired
     CustomerUsersDetailsService service;
 
+    @Autowired
     private Claims claims;
 
     public JwtFilter(Claims claims) {
@@ -34,6 +36,10 @@ public class JwtFilter extends OncePerRequestFilter {
     }
 
     private String username = null;
+
+    public JwtFilter(CustomerUsersDetailsService service) {
+        this.service = service;
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {

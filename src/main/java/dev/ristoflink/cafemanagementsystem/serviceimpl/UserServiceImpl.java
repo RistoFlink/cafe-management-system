@@ -3,10 +3,14 @@ package dev.ristoflink.cafemanagementsystem.serviceimpl;
 import dev.ristoflink.cafemanagementsystem.constants.CafeConstants;
 import dev.ristoflink.cafemanagementsystem.dao.UserDao;
 import dev.ristoflink.cafemanagementsystem.jwt.CustomerUsersDetailsService;
+import dev.ristoflink.cafemanagementsystem.jwt.JwtFilter;
 import dev.ristoflink.cafemanagementsystem.jwt.JwtUtil;
 import dev.ristoflink.cafemanagementsystem.pojo.User;
 import dev.ristoflink.cafemanagementsystem.service.UserService;
 import dev.ristoflink.cafemanagementsystem.utils.CafeUtils;
+import dev.ristoflink.cafemanagementsystem.wrapper.UserWrapper;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,16 +20,23 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+@AllArgsConstructor
+@NoArgsConstructor
 @Slf4j
 @Service
 public class UserServiceImpl implements UserService {
+    @Autowired
     private UserDao userDao;
     private AuthenticationManager authenticationManager;
     private CustomerUsersDetailsService customerUsersDetailsService;
     private JwtUtil jwtUtil;
+    @Autowired
+    private JwtFilter jwtFilter;
 
     @Autowired
     public UserServiceImpl(UserDao userDao, AuthenticationManager authenticationManager, CustomerUsersDetailsService customerUsersDetailsService, JwtUtil jwtUtil) {
@@ -33,6 +44,7 @@ public class UserServiceImpl implements UserService {
         this.authenticationManager = authenticationManager;
         this.customerUsersDetailsService = customerUsersDetailsService;
         this.jwtUtil = jwtUtil;
+        this.jwtFilter = jwtFilter;
     }
 
 
@@ -79,6 +91,16 @@ public class UserServiceImpl implements UserService {
             e.printStackTrace();
         }
         return new ResponseEntity<String>("{\"message\":\""+"Bad credentials."+"\"}", HttpStatus.BAD_REQUEST);
+    }
+
+    @Override
+    public ResponseEntity<List<UserWrapper>> getAllUsers() {
+        try {
+            return jwtFilter.isAdmin() ? new ResponseEntity<>(userDao.getAllUsers(), HttpStatus.OK) : new ResponseEntity<>(new ArrayList<>(), HttpStatus.UNAUTHORIZED);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     private boolean validateSignUpMap(Map<String, String> requestMap){

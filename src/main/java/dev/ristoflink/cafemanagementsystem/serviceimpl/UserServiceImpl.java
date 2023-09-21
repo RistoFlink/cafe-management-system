@@ -8,6 +8,7 @@ import dev.ristoflink.cafemanagementsystem.jwt.JwtUtil;
 import dev.ristoflink.cafemanagementsystem.pojo.User;
 import dev.ristoflink.cafemanagementsystem.service.UserService;
 import dev.ristoflink.cafemanagementsystem.utils.CafeUtils;
+import dev.ristoflink.cafemanagementsystem.utils.EmailUtils;
 import dev.ristoflink.cafemanagementsystem.wrapper.UserWrapper;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -34,6 +35,9 @@ public class UserServiceImpl implements UserService {
     private JwtUtil jwtUtil;
     @Autowired
     private JwtFilter jwtFilter;
+
+    @Autowired
+    private EmailUtils emailUtils;
 
     @Autowired
     public UserServiceImpl(UserDao userDao, AuthenticationManager authenticationManager, CustomerUsersDetailsService customerUsersDetailsService, JwtUtil jwtUtil) {
@@ -107,6 +111,7 @@ public class UserServiceImpl implements UserService {
                  Optional<User> optional = userDao.findById(Integer.parseInt(requestMap.get("id")));
                  if (!optional.isEmpty()) {
                      userDao.updateStatus(requestMap.get("status"), Integer.parseInt(requestMap.get("id")));
+                     sendMailToAllAdmins(requestMap.get("status"), optional.get().getEmail(), userDao.getAllAdmin());
                      return CafeUtils.getResponseEntity("User status updated successfully", HttpStatus.OK);
                  } else {
                      CafeUtils.getResponseEntity("User ID does not exist", HttpStatus.BAD_REQUEST);
@@ -118,6 +123,15 @@ public class UserServiceImpl implements UserService {
             e.printStackTrace();
         }
         return CafeUtils.getResponseEntity(CafeConstants.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    private void sendMailToAllAdmins(String status, String user, List<String> allAdmin) {
+        allAdmin.remove(jwtFilter.getCurrentUser());
+        if(status != null && status.equalsIgnoreCase("true")) {
+            emailUtils.sendSimpleMessage(jwtFilter.getCurrentUser(), "Account approved", "User " +  user + " has been approved by the admin" + jwtFilter.getCurrentUser() + " and their account is now activated.", allAdmin);
+        } else {
+            emailUtils.sendSimpleMessage(jwtFilter.getCurrentUser(), "Account disabled", "User " +  user + " has been disabled by the admin" + jwtFilter.getCurrentUser() + " and their account is now de®activated.", allAdmin);
+        }
     }
 
     private boolean validateSignUpMap(Map<String, String> requestMap){

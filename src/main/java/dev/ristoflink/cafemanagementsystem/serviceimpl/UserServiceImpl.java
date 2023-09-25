@@ -1,5 +1,6 @@
 package dev.ristoflink.cafemanagementsystem.serviceimpl;
 
+import com.google.common.base.Strings;
 import dev.ristoflink.cafemanagementsystem.constants.CafeConstants;
 import dev.ristoflink.cafemanagementsystem.dao.UserDao;
 import dev.ristoflink.cafemanagementsystem.jwt.CustomerUsersDetailsService;
@@ -144,6 +145,18 @@ public class UserServiceImpl implements UserService {
             }
             return CafeUtils.getResponseEntity(CafeConstants.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (Exception e){
+            e.printStackTrace();
+        }
+        return CafeUtils.getResponseEntity(CafeConstants.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<String> forgotPassword(Map<String, String> requestMap) {
+        try {
+            User user = userDao.findByEmail(requestMap.get("email"));
+            if (!Objects.isNull(user) && !Strings.isNullOrEmpty(user.getEmail())) emailUtils.forgotMail(user.getEmail(), "Credentials by Cafe Management System", user.getPassword());
+            return CafeUtils.getResponseEntity("Check your email for instructions.", HttpStatus.OK);
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return CafeUtils.getResponseEntity(CafeConstants.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);

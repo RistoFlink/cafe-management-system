@@ -115,7 +115,7 @@ public class UserServiceImpl implements UserService {
                      sendMailToAllAdmins(requestMap.get("status"), optional.get().getEmail(), userDao.getAllAdmin());
                      return CafeUtils.getResponseEntity("User status updated successfully", HttpStatus.OK);
                  } else {
-                     CafeUtils.getResponseEntity("User ID does not exist", HttpStatus.BAD_REQUEST);
+                     return CafeUtils.getResponseEntity("User ID does not exist", HttpStatus.BAD_REQUEST);
                  }
              } else {
                  CafeUtils.getResponseEntity(CafeConstants.UNAUTHORIZED_ACCESS, HttpStatus.UNAUTHORIZED);

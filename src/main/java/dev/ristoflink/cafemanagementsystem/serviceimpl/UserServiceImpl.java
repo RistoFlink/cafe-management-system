@@ -155,7 +155,7 @@ public class UserServiceImpl implements UserService {
         try {
             User user = userDao.findByEmail(requestMap.get("email"));
             if (!Objects.isNull(user) && !Strings.isNullOrEmpty(user.getEmail())) emailUtils.forgotMail(user.getEmail(), "Credentials by Cafe Management System", user.getPassword());
-            return CafeUtils.getResponseEntity("Check your email for instructions.", HttpStatus.OK);
+            return CafeUtils.getResponseEntity("Check your email for instructions", HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -1,5 +1,6 @@
 package dev.ristoflink.cafemanagementsystem.serviceimpl;
 
+import com.google.common.base.Strings;
 import dev.ristoflink.cafemanagementsystem.constants.CafeConstants;
 import dev.ristoflink.cafemanagementsystem.dao.CategoryDao;
 import dev.ristoflink.cafemanagementsystem.jwt.JwtFilter;
@@ -8,14 +9,18 @@ import dev.ristoflink.cafemanagementsystem.service.CategoryService;
 import dev.ristoflink.cafemanagementsystem.utils.CafeUtils;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.http.parser.HttpParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @AllArgsConstructor
 @NoArgsConstructor
 @Service
@@ -48,6 +53,20 @@ public class CategoryServiceImpl implements CategoryService {
             e.printStackTrace();
         }
         return CafeUtils.getResponseEntity(CafeConstants.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<List<Category>> getAllCategories(String filterValue) {
+        try {
+            if(!Strings.isNullOrEmpty(filterValue) && filterValue.equalsIgnoreCase("true")) {
+                log.info("Inside if");
+                return new ResponseEntity<List<Category>>(categoryDao.getAllCategories(), HttpStatus.OK);
+            }
+            return new ResponseEntity<>(categoryDao.findAll(), HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new ResponseEntity<List<Category>>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     private boolean validateCategoryMap(Map<String, String> requestMap, boolean validateId) {

@@ -1,12 +1,15 @@
 package dev.ristoflink.cafemanagementsystem.serviceimpl;
 
 import dev.ristoflink.cafemanagementsystem.constants.CafeConstants;
+import dev.ristoflink.cafemanagementsystem.dao.CategoryDao;
 import dev.ristoflink.cafemanagementsystem.dao.ProductDao;
 import dev.ristoflink.cafemanagementsystem.jwt.JwtFilter;
 import dev.ristoflink.cafemanagementsystem.pojo.Category;
 import dev.ristoflink.cafemanagementsystem.pojo.Product;
 import dev.ristoflink.cafemanagementsystem.service.ProductService;
 import dev.ristoflink.cafemanagementsystem.utils.CafeUtils;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +18,8 @@ import org.springframework.stereotype.Service;
 import java.util.Map;
 
 @Service
+@AllArgsConstructor
+@NoArgsConstructor
 public class ProductServiceImpl implements ProductService {
 
     @Autowired
@@ -22,6 +27,12 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     ProductDao productDao;
+
+    @Autowired
+    public ProductServiceImpl(ProductDao productDao) {
+        this.productDao = productDao;
+        this.jwtFilter = jwtFilter;
+    }
 
     @Override
     public ResponseEntity<String> addNewProduct(Map<String, String> requestMap) {
@@ -32,7 +43,10 @@ public class ProductServiceImpl implements ProductService {
                     return CafeUtils.getResponseEntity("Product successfully added", HttpStatus.OK);
                 }
                 return CafeUtils.getResponseEntity(CafeConstants.INVALID_DATA, HttpStatus.BAD_REQUEST);
-            } else return CafeUtils.getResponseEntity(CafeConstants.UNAUTHORIZED_ACCESS, HttpStatus.UNAUTHORIZED);
+            } else {
+                System.out.println("Testing what's wrong");
+                return CafeUtils.getResponseEntity(CafeConstants.UNAUTHORIZED_ACCESS, HttpStatus.UNAUTHORIZED);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -44,7 +58,7 @@ public class ProductServiceImpl implements ProductService {
         category.setId(Integer.parseInt(requestMap.get("categoryId")));
 
         Product product = new Product();
-        if(isAdded) {
+        if (isAdded) {
             product.setId(Integer.parseInt(requestMap.get("id")));
         } else {
             product.setStatus("true");

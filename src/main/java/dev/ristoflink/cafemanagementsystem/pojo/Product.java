@@ -7,6 +7,8 @@ import org.hibernate.annotations.DynamicUpdate;
 
 import java.io.Serializable;
 
+@NamedQuery(name = "Product.getAllProducts", query = "select new dev.ristoflink.cafemanagementsystem.wrapper.ProductWrapper(p.id, p.name, p.description, p.price, p.status, p.category.id, p.category.name) from Product p")
+
 @Data
 @Entity
 @DynamicUpdate

@@ -8,6 +8,7 @@ import dev.ristoflink.cafemanagementsystem.pojo.Category;
 import dev.ristoflink.cafemanagementsystem.pojo.Product;
 import dev.ristoflink.cafemanagementsystem.service.ProductService;
 import dev.ristoflink.cafemanagementsystem.utils.CafeUtils;
+import dev.ristoflink.cafemanagementsystem.wrapper.ProductWrapper;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -51,6 +54,16 @@ public class ProductServiceImpl implements ProductService {
             e.printStackTrace();
         }
         return CafeUtils.getResponseEntity(CafeConstants.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<List<ProductWrapper>> getAllProducts() {
+        try {
+            return new ResponseEntity<>(productDao.getAllProducts(), HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     private Product getProductFromMap(Map<String, String> requestMap, boolean isAdded) {

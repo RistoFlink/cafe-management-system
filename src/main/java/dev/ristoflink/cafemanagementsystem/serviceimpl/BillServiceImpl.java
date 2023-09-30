@@ -98,7 +98,7 @@ public class BillServiceImpl implements BillService {
     @Override
     public ResponseEntity<List<Bill>> getBills() {
         List<Bill> list = new ArrayList<>();
-        if (jwtFilter.isAdmin()){
+        if (jwtFilter.isAdmin()) {
             list = billDao.getAllBills();
         } else {
             list = billDao.getBillsByUsername(jwtFilter.getCurrentUser());
@@ -135,6 +135,22 @@ public class BillServiceImpl implements BillService {
         }
         log.info("Hopelessly lost");
         return null;
+    }
+
+    @Override
+    public ResponseEntity<String> deleteBill(Integer id) {
+        try {
+            Optional<Bill> optional = billDao.findById(id);
+            if(!optional.isEmpty()) {
+                billDao.deleteById(id);
+                return CafeUtils.getResponseEntity("Bill deleted successfully", HttpStatus.OK);
+            }
+            return CafeUtils.getResponseEntity("Bill ID does not exist", HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        log.info("Something went wrong inside BillServiceImpl");
+        return CafeUtils.getResponseEntity(CafeConstants.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     private byte[] getByteArray(String filePath) {

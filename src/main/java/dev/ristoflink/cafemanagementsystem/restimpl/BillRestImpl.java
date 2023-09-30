@@ -5,6 +5,7 @@ import dev.ristoflink.cafemanagementsystem.pojo.Bill;
 import dev.ristoflink.cafemanagementsystem.rest.BillRest;
 import dev.ristoflink.cafemanagementsystem.service.BillService;
 import dev.ristoflink.cafemanagementsystem.utils.CafeUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @RestController
 public class BillRestImpl implements BillRest {
     @Autowired
@@ -47,5 +49,16 @@ public class BillRestImpl implements BillRest {
             e.printStackTrace();
         }
         return null;
+    }
+
+    @Override
+    public ResponseEntity<String> deleteBill(Integer id) {
+        try {
+            return billService.deleteBill(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        log.info("Something went wrong inside BillRestImpl");
+        return CafeUtils.getResponseEntity(CafeConstants.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

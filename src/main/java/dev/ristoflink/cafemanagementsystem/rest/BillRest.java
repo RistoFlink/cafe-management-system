@@ -20,4 +20,5 @@ public interface BillRest {
 
     @DeleteMapping("/delete/{id}")
     ResponseEntity<String> deleteBill(@PathVariable Integer id);
+
 }

@@ -35,8 +35,8 @@ public class Bill implements Serializable {
     @Column(name = "paymentmethod")
     private String paymentMethod;
 
-    @Column(name = "total")
-    private Integer total;
+    @Column(name = "totalamount")
+    private Integer totalAmount;
 
     @Column(name = "productdetails", columnDefinition = "json")
     private String productDetails;
